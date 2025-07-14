@@ -1,24 +1,27 @@
 <?php
-include 'application.php'; // Database connection
+include 'application.php';
 session_start();
 
 $email = $_POST['email'];
 $password = $_POST['password'];
-$full_name = $_POST['full_name'];
 
-// Hash the password securely
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-// Insert into database
-$sql = "INSERT INTO users (email, password, full_name) VALUES (?, ?, ?)";
+$sql = "SELECT * FROM users WHERE email = ?";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "sss", $email, $hashed_password, $full_name);
+mysqli_stmt_bind_param($stmt, "s", $email);
 mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
-if (mysqli_stmt_affected_rows($stmt) > 0) {
-    echo "Registration successful!";
+if ($user = mysqli_fetch_assoc($result)) {
+    if (password_verify($password, $user['password'])) {
+        // Password is correct
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['full_name'] = $user['full_name'];
+        echo "Welcome, " . htmlspecialchars($user['full_name']);
+    } else {
+        echo "Invalid password";
+    }
 } else {
-    echo "Registration failed: " . mysqli_error($conn);
+    echo "User not found";
 }
 
 mysqli_close($conn);
