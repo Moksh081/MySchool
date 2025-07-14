@@ -1,39 +1,32 @@
 <?php
-   include 'application.php'; 
-    $full_name=$_POST['full_name'];
-    $email=$_POST['email'];
-    $password=$_POST['password'];
-    $password= sha1($password);
-    $phone=$_POST['phone'];
-    $cateogary=$_POST['cateogary'];
-   
-    $sql = "SELECT * FROM users WHERE email='$email'";
+include 'application.php'; // Database connection
+session_start();
 
-    $result = mysqli_query($conn,$sql);
-    if (!$result) {
-        echo "Something went wrong";
-        exit;
-    }
+// Step 1: Get form values
+$full_name = $_POST['full_name'];
+$email = $_POST['email'];
+$password = $_POST['password'];
+$phone = $_POST['phone'];
+$cateogary = $_POST['cateogary'];
 
-    $row_count = mysqli_num_rows($result);
-    if($row_count !=0){
-        echo "This email id is already registered with us!";
-        exit;
-    }
+// Step 2: Securely hash the password
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users(email , PASSWORD , full_name , phone , cateogary) VALUES ('$email', '$password', '$full_name', '$phone', '$cateogary')";
+// Step 3: Prepare SQL query
+$sql = "INSERT INTO users (full_name, email, password, phone, cateogary) VALUES (?, ?, ?, ?, ?)";
+$stmt = mysqli_prepare($conn, $sql);
 
-    $result = mysqli_query($conn,$sql);
-    if (!$result) {
-        echo "Error: " . mysqli_error($conn);
-        exit;
-    }
+// Step 4: Bind parameters
+mysqli_stmt_bind_param($stmt, "sssss", $full_name, $email, $hashed_password, $phone, $cateogary);
 
-    echo "Registration successful";
-    
-    ?>
-    <br/>
-    <a href="nav.html">GO TO HOMEPAGE</a>
-    <?php
-    mysqli_close($conn);
+// Step 5: Execute and check result
+mysqli_stmt_execute($stmt);
+
+if (mysqli_stmt_affected_rows($stmt) > 0) {
+    echo "✅ Registration successful!";
+} else {
+    echo "❌ Registration failed: " . mysqli_error($conn);
+}
+
+mysqli_close($conn);
 ?>
