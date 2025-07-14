@@ -1,7 +1,7 @@
 # 🏫 MySchool – A Responsive Website for Government Schools
 
 **Live Site:** [https://school-zvw4.onrender.com](https://school-zvw4.onrender.com)  
-**Repository:** [https://github.com/Moksh081/school](https://github.com/Moksh081/school)
+**Repository:** [https://github.com/Moksh081/school](https://github.com/Moksh081/MySchool)
 **Linkedin Post:** [LinkedIn Post](https://www.linkedin.com/posts/moksh081_webdevelopment-achievement-proudmoment-activity-7209068385433800707-WCPt?utm_source=share&utm_medium=member_desktop&rcm=ACoAADASPUMBuIe6N3oXeZ66mo0QrF0fDJ4xPOw)
 ## 💡 Overview
 
