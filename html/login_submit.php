@@ -1,32 +1,25 @@
 <?php
-   include 'application.php'; 
+include 'application.php'; // Database connection
+session_start();
 
-    $email=$_POST['email'];
-    $password=$_POST['password'];
-    $password= sha1($password);
-    
-    $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+$email = $_POST['email'];
+$password = $_POST['password'];
+$full_name = $_POST['full_name'];
 
-    $result = mysqli_query($conn, $sql);
-    if (!$result) {
-        echo "Error: " . mysqli_error($conn);
-        exit;
-    }
+// Hash the password securely
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $row = mysqli_fetch_assoc($result);
-    if ($row) {
-        echo "Hello " . $row['full_name'] . "<br/>";
+// Insert into database
+$sql = "INSERT INTO users (email, password, full_name) VALUES (?, ?, ?)";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "sss", $email, $hashed_password, $full_name);
+mysqli_stmt_execute($stmt);
 
-   $_SESSION['user_id'] = $row['id'];
-   $_SESSION['full_name'] = $row['full_name'];
+if (mysqli_stmt_affected_rows($stmt) > 0) {
+    echo "Registration successful!";
+} else {
+    echo "Registration failed: " . mysqli_error($conn);
+}
 
-  ?>
-   <a href="index.php">Go to HomePage</a>
-   <?php
-    } else {
-        echo "Login Failed<br/>";
-    }
-
-    mysqli_close($conn);
-
+mysqli_close($conn);
 ?>
